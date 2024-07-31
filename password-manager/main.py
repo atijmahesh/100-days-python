@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from random import choice, randint, shuffle
 import pyperclip
+import json
 
 WHITE = "#FFFFFF"
 BLACK = "#000000"
@@ -28,14 +29,48 @@ def add_pw():
     web = website_entry.get()
     email = email_entry.get()
     pw = password_entry.get()
+    new_data = {
+        web: {
+            "email": email,
+            "password": pw
+        }
+    }
+
     if len(web) == 0 or len(pw) == 0:
         messagebox.showinfo(title="Oops", message="Please do not leave any fields empty!")
-    elif messagebox.askokcancel(title=web, message=f"These are the details entered: \nEmail: {email}\nPassword: {pw}\nIs this ok?"):
-        with open("data.txt", mode='a') as data_file:
-            data_file.write(f"{web} | {email} | {pw}\n")
-        website_entry.delete(0, END)
-        password_entry.delete(0, END)
+    else:
+        try:
+            with open("data.json", mode="r") as data_file:
+                #read +  old data
+                data = json.load(data_file)
+        except FileNotFoundError:
+            with open("data.json", mode="w") as data_file:
+                json.dump(new_data, data_file, indent=4)
+        else:
+            data.update(new_data)
+            with open("data.json", mode="w") as data_file:
+                #write back to json
+                json.dump(data, data_file, indent=4)
+        finally:
+            website_entry.delete(0, END)
+            password_entry.delete(0, END)
     
+def find_password():
+    web = website_entry.get()
+    email = email_entry.get()
+    if len(web) == 0:
+        messagebox.showinfo(title="Oops", message="Please do not leave any website name empty!")
+    else:
+        try:
+            with open("data.json", mode="r") as data_file:
+                data = json.load(data_file)
+        except FileNotFoundError:
+            messagebox.showinfo(title="Password Information", message="No Data File Found.")
+        else:
+            if web in data and data[web]["email"] == email:
+                messagebox.showinfo(title=web, message=f"Email: {email}\nPassword: {data[web]['password']}")
+            else:
+                messagebox.showinfo(title="Oops", message="No details for the website exist.")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -51,14 +86,17 @@ canvas.grid(row=0, column=1)
 website_label = Label(text="Website:", bg=WHITE, fg = BLACK)
 website_label.grid(row=1, column=0)
 
-website_entry = Entry(width=35, bg=WHITE, fg = BLACK, highlightthickness=0)
-website_entry.grid(row=1, column=1, columnspan=2)
+website_entry = Entry(width=21, bg=WHITE, fg = BLACK, highlightthickness=0)
+website_entry.grid(row=1, column=1)
 website_entry.focus()
+
+search_btn = Button(text="Search", bg=WHITE, fg=BLACK, highlightbackground=WHITE, width=11, command=find_password)
+search_btn.grid(row=1, column=2)
 
 email_label = Label(text="Email/Username:", bg=WHITE, fg = BLACK)
 email_label.grid(row=2, column=0)
 
-email_entry = Entry(width=35, bg=WHITE, fg = BLACK, highlightthickness=0)
+email_entry = Entry(width=37, bg=WHITE, fg = BLACK, highlightthickness=0)
 email_entry.grid(row=2, column=1, columnspan=2)
 email_entry.insert(0, "atijmahesh914@gmail.com")
 
@@ -68,7 +106,7 @@ password_label.grid(row=3, column=0)
 password_entry = Entry(width=21, bg=WHITE, fg = BLACK, highlightthickness=0)
 password_entry.grid(row=3, column=1)
 
-gen_pw = Button(text="Generate Password", bg=WHITE, fg = BLACK, highlightbackground= WHITE, command=generate_pw)
+gen_pw = Button(text="Generate Password", bg=WHITE, fg = BLACK, highlightbackground= WHITE,  width=11, command=generate_pw)
 gen_pw.grid(row=3, column=2)
 
 add_btn = Button(text="Add", width=36, bg=WHITE, fg = BLACK, highlightbackground=WHITE, command=add_pw)
