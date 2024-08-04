@@ -8,7 +8,7 @@ STOCK_ENDPOINT = "https://www.alphavantage.co/query"
 NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
 STOCK_API_KEY = "RLROMMP9SZU28032"
 NEWS_API_KEY = "b76bb57b31d24b5486b59e6b26ef0458"
-account_sid = "AC39ef5b6e154c431311187b6d7d2a8a0f"
+account_sid = os.getenv('TWILIO_ACCOUNT_SID')
 
 stock_parameters = {
     "function": "TIME_SERIES_DAILY",
