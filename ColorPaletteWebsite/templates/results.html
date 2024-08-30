@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 10 Colors</title>
+</head>
+<body>
+    <h1>Top 10 Colors in the Uploaded Image</h1>
+    
+    <ul>
+        {% for color, text_color in colors %}
+            <li style="background-color: {{ color }}; padding: 10px; margin: 5px; color: {{ text_color }};">
+                {{ color }}
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <a href="/">Upload Another Image</a>
+</body>
+</html>
